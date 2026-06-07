@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omnikin Cards</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d0d14;--bg2:#16161f;--bg3:#1e1e2a;--bg4:#252535;
+  --text:#f0f0f8;--text2:#8888aa;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.14);
+  --bleu:#3b82f6;--bleu-l:#93c5fd;
+  --gris:#6b7280;--gris-l:#d1d5db;
+  --noir-eq:#818cf8;--noir-l:#c7d2fe;
+  --rose:#e8315a;--rose-d:#9f1239;
+  --gold:#f59e0b;--green:#10b981;--purple:#8b5cf6;--red:#ef4444;
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;display:flex;justify-content:center}
+#app{width:100%;max-width:480px;min-height:100vh;display:flex;flex-direction:column;padding:10px;gap:8px;position:relative}
+
+/* SETUP */
+#setup{position:fixed;inset:0;background:#0d0d14;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;padding:30px;z-index:100}
+.setup-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:48px;letter-spacing:4px;text-align:center;line-height:1}
+.setup-logo span{color:var(--rose)}
+.setup-sub{font-size:12px;color:var(--text2);text-align:center;line-height:1.7;max-width:320px;margin-bottom:8px}
+.setup-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;color:var(--text2);text-transform:uppercase}
+.setup-btn{width:100%;max-width:300px;padding:14px;border-radius:var(--r);border:none;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:2px;cursor:pointer;transition:transform 0.15s,filter 0.15s}
+.setup-btn:hover{transform:scale(1.02);filter:brightness(1.15)}
+.sbtn-b{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff}
+.sbtn-g{background:linear-gradient(135deg,#374151,#6b7280);color:#fff}
+.sbtn-n{background:linear-gradient(135deg,#1e1b4b,#4338ca);color:#fff}
+
+/* HEADER */
+.hdr{display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;letter-spacing:2px}
+.logo span{color:var(--rose)}
+.per-badge{font-size:11px;color:var(--text2);background:var(--bg3);padding:3px 10px;border-radius:999px;border:1px solid var(--border)}
+
+/* SCOREBOARD */
+.scoreboard{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:10px 6px;display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr}
+.sep{background:var(--border2)}
+.tcol{display:flex;flex-direction:column;align-items:center;gap:2px;padding:2px 4px}
+.tdot{width:8px;height:8px;border-radius:50%}
+.tname{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px}
+.tscore{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;line-height:1}
+.trole{font-size:9px;color:var(--text2)}
+.tb .tdot{background:var(--bleu)} .tb .tname,.tb .tscore{color:var(--bleu-l)}
+.tg .tdot{background:var(--gris)} .tg .tname,.tg .tscore{color:var(--gris-l)}
+.tn .tdot{background:var(--noir-eq)} .tn .tname,.tn .tscore{color:var(--noir-l)}
+.eq-joueur .tname::after{content:" ★";color:var(--gold)}
+.crit-tag{font-size:8px;padding:1px 4px;border-radius:3px;background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.4)}
+
+/* JAUGES ÉQUIPE */
+.jauges{display:flex;gap:6px}
+.jauge-block{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 8px}
+.jauge-top{display:flex;justify-content:space-between;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10px;letter-spacing:1px;margin-bottom:4px}
+.jauge-bg{height:5px;background:var(--bg4);border-radius:999px;overflow:hidden}
+.jauge-fill{height:100%;border-radius:999px;transition:width 0.4s}
+
+/* PHASE / BADGE */
+.phase-row{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.pbadge{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;padding:4px 12px;border-radius:999px;text-transform:uppercase}
+.ph-att{background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)}
+.ph-def{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)}
+.ph-obs{background:rgba(139,92,246,0.15);color:#a78bfa;border:1px solid rgba(139,92,246,0.3)}
+.ph-ia{background:rgba(100,100,120,0.2);color:#aaaacc;border:1px solid rgba(100,100,120,0.3)}
+.ph-crit{background:rgba(239,68,68,0.25);color:#fca5a5;border:1px solid rgba(239,68,68,0.5)}
+
+/* APPEL OBLIGATOIRE */
+.appel-box{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:8px;padding:7px 12px;font-size:12px;color:#fde68a}
+.appel-box b{color:#fbbf24}
+
+/* LOG */
+.log{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;min-height:80px;font-size:13px;line-height:1.65;color:var(--text2)}
+.log b{color:var(--text)}
+.ok{color:#34d399;font-weight:600}.bad{color:#f87171;font-weight:600}
+.warn{color:#fbbf24;font-weight:600}.info{color:#a78bfa;font-weight:600}
+
+/* JOUEURS */
+.slabel{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;color:var(--text2);text-transform:uppercase}
+.roster{display:flex;gap:5px}
+.jcard{flex:1;background:linear-gradient(160deg,#1a1800,#0d0c00);border:1px solid #604800;border-radius:8px;padding:6px 3px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:all 0.18s;position:relative;min-width:0}
+.jcard:hover:not(.jdis):not(.jinterdit){border-color:#ffd43b;transform:translateY(-3px)}
+.jcard.jsel{background:linear-gradient(160deg,#ffd43b,#a06000);border-color:#fff}
+.jcard.jsel *{color:#111!important}
+.jcard.jdis{opacity:0.35;cursor:not-allowed;pointer-events:none}
+.jcard.jinterdit{border-color:#ef4444;opacity:0.45;cursor:not-allowed}
+.jgen{font-size:15px;font-weight:900;font-family:'Barlow Condensed',sans-serif}
+.jnom{font-size:9px;font-weight:700;text-transform:uppercase;text-align:center;line-height:1.1}
+.jrole{font-size:7px;background:rgba(255,212,59,0.12);color:#ffd43b;padding:1px 3px;border-radius:3px;font-weight:700}
+.jend-bg{width:88%;height:3px;background:#333;border-radius:2px;overflow:hidden;margin:2px 0}
+.jend-fill{height:100%;transition:width 0.3s}
+.jstats{width:100%;border-top:1px solid rgba(255,212,59,0.1);padding-top:2px;display:flex;flex-direction:column;gap:1px}
+.jstat-row{display:flex;justify-content:space-between;font-size:7px;padding:0 2px}
+.jstat-l{color:var(--text2)}.jstat-v{font-weight:700;color:#ffd43b}
+.j2x{position:absolute;top:3px;right:3px;font-size:7px;background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.4);padding:1px 3px;border-radius:3px}
+.jfat{position:absolute;top:3px;left:3px;font-size:7px;background:rgba(245,158,11,0.2);color:#fbbf24;border:1px solid rgba(245,158,11,0.4);padding:1px 3px;border-radius:3px}
+
+/* CARTES */
+.cards-zone{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:130px;align-items:flex-end;padding:2px 0}
+.card{width:108px;min-height:145px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:9px 7px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;transition:transform 0.18s cubic-bezier(.34,1.56,.64,1),border-color 0.18s,box-shadow 0.18s;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:10px 10px 0 0}
+.cf::before{background:var(--gold)}.cp::before{background:var(--bleu)}
+.cm::before{background:var(--green)}.ct::before{background:var(--purple)}
+.cd::before{background:#e85858}
+.card:hover:not(:disabled){transform:translateY(-8px) scale(1.03);border-color:var(--border2);box-shadow:0 12px 28px rgba(0,0,0,0.45)}
+.card:disabled{opacity:0.28;cursor:not-allowed;pointer-events:none}
+.card-cost{position:absolute;top:7px;left:7px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:12px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.cf .card-cost{background:var(--gold);color:#111}
+.cp .card-cost{background:var(--bleu);color:#fff}
+.cm .card-cost{background:var(--green);color:#fff}
+.ct .card-cost{background:var(--purple);color:#fff}
+.cd .card-cost{background:#e85858;color:#fff}
+.card-ico{font-size:26px;margin-top:8px}
+.card-nom{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;text-align:center;color:var(--text);line-height:1.2}
+.card-desc{font-size:9px;color:var(--text2);text-align:center;line-height:1.4;flex:1}
+.card-cat{font-size:9px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:999px;margin-top:auto}
+.cf .card-cat{background:rgba(245,158,11,0.15);color:#fbbf24}
+.cp .card-cat{background:rgba(59,130,246,0.15);color:#93c5fd}
+.cm .card-cat{background:rgba(16,185,129,0.15);color:#34d399}
+.ct .card-cat{background:rgba(139,92,246,0.15);color:#a78bfa}
+.cd .card-cat{background:rgba(232,49,90,0.15);color:#fda4af}
+.risk-tag{position:absolute;bottom:4px;right:4px;font-size:7px;background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);padding:1px 4px;border-radius:3px}
+.good-tag{position:absolute;bottom:4px;right:4px;font-size:7px;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:1px 4px;border-radius:3px}
+
+/* CIBLE */
+.cible-row{display:flex;gap:6px}
+.btn-cible{flex:1;padding:10px 6px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;cursor:pointer;transition:all 0.15s;color:var(--text)}
+.btn-cible:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
+.btn-cible:disabled{opacity:0.28;cursor:not-allowed}
+
+/* TRANSITION */
+.trans-row{display:flex;gap:6px}
+.tbtn{flex:1;padding:8px 4px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;cursor:pointer;transition:all 0.15s;color:var(--text);text-align:center}
+.tbtn:hover{border-color:var(--gold);color:var(--gold)}
+.tbtn.tsel{background:var(--gold);color:#111;border-color:#fff}
+
+/* TIMER */
+.timer-bar{height:6px;background:var(--bg4);border-radius:999px;overflow:hidden;display:none}
+.timer-fill{height:100%;background:var(--gold);border-radius:999px;transition:width 0.1s linear}
+
+/* BTN CONTINUER */
+.btn-cont{display:none;margin:4px auto 0;background:var(--rose);color:#fff;border:none;padding:11px 30px;border-radius:999px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;transition:background 0.15s}
+.btn-cont:hover{background:var(--rose-d)}
+.btn-cont:disabled{opacity:0.5;cursor:not-allowed}
+
+/* FIN */
+.fin-overlay{position:fixed;inset:0;background:rgba(13,13,20,0.97);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:200;padding:30px}
+.fin-overlay.show{display:flex}
+.fin-titre{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:54px;text-align:center;line-height:1}
+.fin-board{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:16px 24px;width:260px;display:flex;flex-direction:column;gap:8px}
+.fin-row{display:flex;justify-content:space-between;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px}
+.btn-rejouer{background:var(--rose);color:#fff;border:none;padding:12px 32px;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:1px;cursor:pointer}
+.loader{display:inline-block;width:6px;height:6px;border-radius:50%;background:#fff;margin-left:4px;animation:blink 0.9s infinite alternate}
+@keyframes blink{from{opacity:0.2}to{opacity:1}}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup">
+  <div class="setup-logo">OMNI<span>KIN</span><br>CARDS</div>
+  <div class="setup-sub">Règlement FIKB 2024 — Solo contre IA<br>Choisissez votre couleur d'équipe</div>
+  <div class="setup-label">Votre équipe</div>
+  <button class="setup-btn sbtn-b" onclick="start('BLEU')">🔵 ÉQUIPE BLEUE</button>
+  <button class="setup-btn sbtn-g" onclick="start('GRIS')">⚫ ÉQUIPE GRISE</button>
+  <button class="setup-btn sbtn-n" onclick="start('NOIR')">🟣 ÉQUIPE NOIRE</button>
+</div>
+
+<!-- JEU -->
+<div id="app">
+  <div class="hdr">
+    <div class="logo">OMNI<span>KIN</span> CARDS</div>
+    <div class="per-badge" id="per-label">Période 1/4</div>
+  </div>
+
+  <div class="scoreboard">
+    <div class="tcol tb" id="col-BLEU">
+      <div class="tdot"></div><div class="tname">BLEU</div>
+      <div class="tscore" id="sc-BLEU">0</div>
+      <div class="trole" id="role-BLEU">IA</div>
+    </div>
+    <div class="sep"></div>
+    <div class="tcol tg" id="col-GRIS">
+      <div class="tdot"></div><div class="tname">GRIS</div>
+      <div class="tscore" id="sc-GRIS">0</div>
+      <div class="trole" id="role-GRIS">IA</div>
+    </div>
+    <div class="sep"></div>
+    <div class="tcol tn" id="col-NOIR">
+      <div class="tdot"></div><div class="tname">NOIR</div>
+      <div class="tscore" id="sc-NOIR">0</div>
+      <div class="trole" id="role-NOIR">IA</div>
+    </div>
+  </div>
+
+  <!-- Jauges équipe : EG / MTL / COH -->
+  <div class="jauges" id="jauges"></div>
+
+  <div class="phase-row">
+    <span class="pbadge ph-att" id="pbadge">Attaque</span>
+    <span style="font-size:10px;color:var(--text2)" id="appel-oblig-mini"></span>
+  </div>
+
+  <div class="appel-box" id="appel-box" style="display:none">
+    📋 Appel obligatoire : <b id="appel-txt">—</b> &nbsp;(Art. 6.1.6)
+  </div>
+  <div id="zone-ballon" style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text2)">⚫ <b>Centre</b> <span style='color:#fbbf24;font-size:9px'>— Mise en jeu (Art. 5.2.2)</span></div>
+
+  <div class="log" id="log">Chargement...</div>
+
+  <!-- Timer jeu rapide -->
+  <div class="timer-bar" id="timer-bar">
+    <div class="timer-fill" id="timer-fill" style="width:100%"></div>
+  </div>
+
+  <!-- Joueurs -->
+  <div class="slabel">Composition</div>
+  <div class="roster" id="roster"></div>
+
+  <!-- Choix de transition (après récup ballon) -->
+  <div class="trans-row" id="trans-row" style="display:none"></div>
+
+  <!-- Choix de cible -->
+  <div class="cible-row" id="cible-row" style="display:none"></div>
+
+  <!-- Cartes -->
+  <div class="slabel" id="cards-label" style="margin-top:2px">Options tactiques</div>
+  <div class="cards-zone" id="cards-zone"></div>
+
+  <button class="btn-cont" id="btn-cont" onclick="continuer()">Continuer ➔</button>
+</div>
+
+<!-- FIN DE MATCH -->
+<div class="fin-overlay" id="fin">
+  <div class="fin-titre" id="fin-titre">VICTOIRE !</div>
+  <div class="fin-board" id="fin-board"></div>
+  <button class="btn-rejouer" onclick="relancer()">Rejouer</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// CONSTANTES RÈGLEMENT FIKB 2024
+// ═══════════════════════════════════════════════════════════
+const SC_CIBLE    = 11;   // Art. 5.1.2
+const SC_CRITIQUE = 9;    // Art. 7.15 = cible - 2
+const NB_PERIODES = 4;    // Art. 5.1.3
+const MTL_MAX     = 100;
+const EG_MAX      = 100;
+
+// ═══════════════════════════════════════════════════════════
+// JOUEURS — stats PUI / PRE / AGI / ANT / END (0-100)
+// ═══════════════════════════════════════════════════════════
+const JOUEURS_BASE = {
+  pierre:  { nom:"Pierre",  gen:88, role:"Buteur",    pui:92, pre:55, agi:58, ant:64, end:100 },
+  marie:   { nom:"Marie",   gen:83, role:"Soutien",   pui:52, pre:86, agi:76, ant:72, end:100 },
+  jacques: { nom:"Jacques", gen:86, role:"Capitaine", pui:78, pre:68, agi:74, ant:90, end:100 },
+  alex:    { nom:"Alex",    gen:79, role:"Joker",     pui:56, pre:70, agi:92, ant:66, end:100 },
+};
+
+// ═══════════════════════════════════════════════════════════
+// FORMATIONS IA (cachées au joueur)
+// ═══════════════════════════════════════════════════════════
+const FORMATIONS_IA = {
+  carre_base:     { nom:"Carré de Base",      contre:"Force",    defBonus:0  },
+  carre_rapproche:{ nom:"Carré Rapproché",    contre:"Mobilité", defBonus:15 },
+  bloc_rapproche: { nom:"Bloc Rapproché",     contre:"Précision",defBonus:20 },
+  carre_eloigne:  { nom:"Carré Éloigné",      contre:"Force",    defBonus:8  },
+};
+
+// ═══════════════════════════════════════════════════════════
+// CARTES D'ATTAQUE (depuis Liste_cartes.docx + Feuil3)
+// cat: F=Force P=Précision M=Mobilité T=Mental
+// cout = coût MTL
+// ═══════════════════════════════════════════════════════════
+const CARTES = {
+  // ── FORCE ──────────────────────────────────────────────
+  frappe_tendue: {
+    nom:"Frappe Tendue", cat:"F", ico:"💥", cout:0,
+    desc:"Frappe ascendante classique. Toujours jouable.",
+    stat:"pui",
+    calculer(j, eq, formIA) {
+      let jet = 50;
+      if (j.pui>=80) jet+=15; else if (j.pui>=60) jet+=5; else if (j.pui<40) jet-=10;
+      // END
+      let rFaute = 0;
+      if (j.end<40) rFaute+=15; else if (j.end<60) rFaute+=10; else if (j.end<80) rFaute+=5;
+      // COH → protège Manque contact
+      let rContact = 0;
+      if (eq.coh>=80) rContact-=15; else if (eq.coh>=60) rContact-=5; else if (eq.coh<50) rContact+=10;
+      return {jet, rFaute, rContact, fautesPossibles:["Pente Descendante","Extérieur"]};
+    }
+  },
+  frappe_lourde: {
+    nom:"Frappe Lourde", cat:"F", ico:"⚡", cout:0,
+    desc:"Très haute puissance. Risque Extérieur si Mental bas.",
+    stat:"pui",
+    calculer(j, eq, formIA) {
+      let jet = 55;
+      if (j.pui>=80) jet+=20; else if (j.pui>=60) jet+=10; else if (j.pui<40) jet-=5;
+      let rFaute = 0;
+      if (eq.mtl<30) rFaute+=25; else if (eq.mtl<50) rFaute+=15;
+      if (j.end<50) rFaute+=10; else if (j.end<30) rFaute+=20;
+      return {jet, rFaute, rContact:0, fautesPossibles:["Extérieur","Pente Descendante"]};
+    }
+  },
+  frappe_puissance4: {
+    nom:"Frappe Puissance 4", cat:"F", ico:"🔥", cout:0,
+    desc:"+15% réussite si MTL équipe > 70%.",
+    stat:"pui",
+    calculer(j, eq, formIA) {
+      let jet = 52;
+      if (j.pui>=80) jet+=10; else if (j.pui>=60) jet+=5;
+      if (eq.mtl>70) jet+=15;
+      let rFaute = 0;
+      if (j.end<40) rFaute+=10;
+      let rContact = eq.coh>=70 ? -10 : 0;
+      return {jet, rFaute, rContact, fautesPossibles:["Manque un Contact","Pente Descendante"]};
+    }
+  },
+  impact_zone: {
+    nom:"Impact Zone", cat:"F", ico:"🎯", cout:0,
+    desc:"Vise le centre. +10 sur ta prochaine attaque.",
+    stat:"pui",
+    persistant:"impact_zone",
+    calculer(j, eq, formIA) {
+      let jet = 48;
+      if (j.pui>=70) jet+=10; else if (j.pui<50) jet-=5;
+      let rContact = eq.coh>=70 ? -5 : 0;
+      return {jet, rFaute:0, rContact, fautesPossibles:["Extérieur"]};
+    }
+  },
+  surcharge: {
+    nom:"Surcharge", cat:"F", ico:"💢", cout:2,
+    desc:"Ignore le bonus défense adverse. Coût : 2 MTL.",
+    stat:"pui",
+    ignoreFormation: true,
+    calculer(j, eq, formIA) {
+      let jet = 60;
+      if (j.pui>=80) jet+=15;
+      let rFaute = j.end<40 ? 20 : 5;
+      if (eq.eg<40) jet-=10;
+      return {jet, rFaute, rContact:0, fautesPossibles:["Offensive","Pente Descendante"]};
+    }
+  },
+  // ── PRÉCISION ──────────────────────────────────────────
+  lob_tactique: {
+    nom:"Lob Tactique", cat:"P", ico:"🌀", cout:0,
+    desc:"Passe au-dessus du bloc. Dévastateur en bord de ligne.",
+    stat:"pre",
+    calculer(j, eq, formIA) {
+      let jet = 45;
+      if (j.pre>=80) jet+=20; else if (j.pre>=60) jet+=10; else if (j.pre<40) jet-=10;
+      // Inutile contre Carré de Base
+      if (formIA==="carre_base") jet-=20;
+      // Bonus si bord de ligne (hasard simulé)
+      if (Math.random()<0.3) jet+=15;
+      let rFaute = j.end<50 ? 8 : 0;
+      return {jet, rFaute, rContact:0, fautesPossibles:["Lancée Trop Court","Extérieur"]};
+    }
+  },
+  dunk: {
+    nom:"Dunk", cat:"P", ico:"🏀", cout:2,
+    desc:"90% réussite vs Bloc Rapproché. Descendante garantie sinon.",
+    stat:"pui",
+    calculer(j, eq, formIA) {
+      if (eq.mtl<50) return {jet:-99, rFaute:100, rContact:0, fautesPossibles:["Pente Descendante"], nonJouable:"MTL < 50%"};
+      if (eq.eg<30) return {jet:-99, rFaute:100, rContact:0, fautesPossibles:["Pente Descendante"], nonJouable:"EG < 30%"};
+      let jet, rFaute;
+      if (formIA==="bloc_rapproche") {
+        jet = 85 - (100-j.agi)*0.05; // -quelques % selon niveau du rapproché
+        rFaute = j.end<40 ? 20 : 5;
+      } else {
+        jet = -99; // Descendante automatique
+        rFaute = 100;
+      }
+      return {jet, rFaute, rContact:0, fautesPossibles:["Pente Descendante"]};
+    }
+  },
+  feinte_corps: {
+    nom:"Feinte de Corps", cat:"P", ico:"🤸", cout:0,
+    desc:"L'IA choisit sa défense au hasard. Annule son bonus.",
+    stat:"agi",
+    annuleFormation: true,
+    calculer(j, eq, formIA) {
+      let jet = 52;
+      if (j.pre>=70) jet+=10;
+      if (j.agi>=80) jet+=15;
+      else if (j.agi>=60) jet+=7;
+      else if (j.agi<40) jet=50; // aucun effet
+      let rFaute = j.end<40 ? 10 : 0;
+      return {jet, rFaute, rContact:0, fautesPossibles:["Offensive"]};
+    }
+  },
+  feinte_bras: {
+    nom:"Feinte (Changement de bras)", cat:"P", ico:"👈", cout:0,
+    desc:"Aug. % de marquer. Risque faute si AGI faible.",
+    stat:"agi",
+    calculer(j, eq, formIA) {
+      let jet = 50;
+      if (j.agi>=80) { jet+=15; }
+      else if (j.agi>=60) jet+=8;
+      if (j.pre>=70) jet+=15;
+      let rFaute = j.agi<40 ? 15 : j.agi<60 ? 5 : 0;
+      if (j.end<40) rFaute+=10;
+      return {jet, rFaute, rContact:0, fautesPossibles:["Offensive"]};
+    }
+  },
+  tir_pivot: {
+    nom:"Tir en Pivot", cat:"P", ico:"🔄", cout:0,
+    desc:"Réduit de 1 MTL le coût de la prochaine action.",
+    stat:"pre",
+    persistant:"cout_reduit",
+    calculer(j, eq, formIA) {
+      let jet = 48;
+      if (j.pre>=70) jet+=10;
+      let rFaute = j.end<50 ? 5 : 0;
+      return {jet, rFaute, rContact:0, fautesPossibles:["Pente Descendante"]};
+    }
+  },
+  frappe_rasante: {
+    nom:"Frappe Rasante", cat:"P", ico:"⬇️", cout:0,
+    desc:"Réduit AGI du défenseur adverse -20 au prochain tour.",
+    stat:"pre",
+    persistant:"debuff_agi",
+    calculer(j, eq, formIA) {
+      let jet = 48;
+      if (j.pre>=80) jet+=15; else if (j.pre>=60) jet+=8;
+      let rFaute = j.end<50 ? 8 : 0;
+      return {jet, rFaute, rContact:0, fautesPossibles:["Pente Descendante","Extérieur"]};
+    }
+  },
+  // ── MOBILITÉ ───────────────────────────────────────────
+  securite_bord: {
+    nom:"Sécurité Bord de Ligne", cat:"M", ico:"🛡️", cout:0,
+    desc:"3 joueurs portent la balle. Aucun Extérieur possible.",
+    stat:"pre",
+    calculer(j, eq, formIA) {
+      let jet = 38; // peu de chance de marquer
+      if (j.pre>=70) jet+=10;
+      if (j.pui>=60) jet+=5;
+      let rFaute = 0; // annule extérieur
+      let rContact = eq.coh>=70 ? -99 : 0; // élimine manque contact
+      return {jet, rFaute, rContact, fautesPossibles:[]};
+    }
+  },
+  deplacement: {
+    nom:"Déplacement", cat:"M", ico:"➡️", cout:1,
+    desc:"Déplacement vers le bloc. 80-90% de faute si défense rapprochée.",
+    stat:"agi",
+    calculer(j, eq, formIA) {
+      // Si défense rapprochée → grosse faute pour la défense
+      if (formIA==="carre_rapproche"||formIA==="bloc_rapproche") {
+        let defFaute = j.agi>=70 ? 90 : 80;
+        return {jet:90, rFaute:0, rContact:0, fautesPossibles:["Défensive"], defFaute};
+      }
+      let jet = 52;
+      if (j.agi>=70) jet+=10;
+      let rFaute = j.agi<40 ? 12 : 0;
+      if (eq.eg<30) jet-=15;
+      let rContact = eq.coh>=60 ? -8 : 0;
+      return {jet, rFaute, rContact, fautesPossibles:["Déplacement Illégal"]};
+    }
+  },
+  jeu_rapide: {
+    nom:"Jeu Rapide", cat:"M", ico:"⚡", cout:0,
+    desc:"Bonus jet si EG élevée. -10 EG après utilisation.",
+    stat:"pui",
+    calculer(j, eq, formIA) {
+      if (j.end<40) return {jet:-99, rFaute:0, rContact:0, fautesPossibles:[], nonJouable:"END < 40"};
+      let jet = 50;
+      if (eq.eg>=70) jet+=15; else if (eq.eg<40) jet-=10;
+      if (j.pui>=70) jet+=15;
+      if (j.agi>=70) jet+=5;
+      return {jet, rFaute:5, rContact:0, fautesPossibles:["Offensive"]};
+    }
+  },
+  passe_frappe: {
+    nom:"Passe + Frappe", cat:"M", ico:"🤝", cout:0,
+    desc:"+15 jet. 15% risque de rater la passe → jet ÷ 2.",
+    stat:"pre",
+    calculer(j, eq, formIA) {
+      // Calcul risque passe ratée
+      let rPasse = 15;
+      if (j.pre>=80) rPasse-=10; else if (j.pre<40) rPasse+=10;
+      if (eq.coh>=80) rPasse-=10; else if (eq.coh<50) rPasse+=10;
+      let passeRatee = Math.random()*100 < rPasse;
+      let jet = passeRatee ? 30 : 65; // jet divisé par ~2 si raté
+      if (!passeRatee) {
+        if (j.pui>=70) jet+=10;
+        if (j.ant>=70) jet+=5;
+      }
+      let rFaute = j.end<40 ? 15 : 0;
+      return {jet, rFaute, rContact: passeRatee?10:0,
+              fautesPossibles:["Manque un Contact"],
+              passeInfo: passeRatee ? "⚠️ Passe ratée — jet divisé par 2 !" : null};
+    }
+  },
+  passage_relais: {
+    nom:"Passage de Relais", cat:"M", ico:"🔁", cout:0,
+    desc:"Transfère 10 pts MTL équipe → bonus attaquant.",
+    stat:"ant",
+    effet_immediat: true,
+    calculer(j, eq, formIA) {
+      let bonus = j.ant>=70 ? 12 : 10;
+      return {jet:50+bonus, rFaute:0, rContact:0, fautesPossibles:[], transfertMtl:bonus};
+    }
+  },
+  attaque_furtive: {
+    nom:"Attaque Furtive", cat:"M", ico:"👻", cout:1,
+    desc:"L'IA ne voit pas la frappe. Supprime tout contre-jeu.",
+    stat:"agi",
+    ignoreFormation: true,
+    calculer(j, eq, formIA) {
+      let jet = 58;
+      if (j.agi>=70) jet+=5;
+      let rFaute = j.end<40 ? 5 : 0;
+      return {jet, rFaute, rContact:0, fautesPossibles:["Offensive"]};
+    }
+  },
+  // ── MENTAL / TECH ───────────────────────────────────────
+  cri_guerre: {
+    nom:"Cri de Guerre", cat:"T", ico:"📢", cout:0,
+    desc:"+20 MTL immédiat. Prépare une grosse attaque.",
+    effet_immediat:true,
+    calculer(j, eq) { return {jet:0, rFaute:0, rContact:0, fautesPossibles:[], mtlBonus:20}; }
+  },
+  destabilisation: {
+    nom:"Déstabilisation", cat:"T", ico:"😵", cout:0,
+    desc:"Réduit le MTL adverse de 15 pts.",
+    effet_immediat:true,
+    calculer(j, eq) {
+      let malus = j.ant>=70 ? 20 : 15;
+      return {jet:0, rFaute:0, rContact:0, fautesPossibles:[], mtlAdverseMalus:malus};
+    }
+  },
+  focus_intense: {
+    nom:"Focus Intense", cat:"T", ico:"🔮", cout:2,
+    desc:"Prochaine attaque = Réussite Critique garantie.",
+    persistant:"focus_intense",
+    calculer(j, eq) {
+      if (eq.eg<20) return {jet:0, rFaute:0, rContact:0, fautesPossibles:[], nonJouable:"EG < 20"};
+      let bonus = j.end<30 ? 20 : 99; // réussite critique
+      return {jet:bonus, rFaute:0, rContact:0, fautesPossibles:[]};
+    }
+  },
+  murmure_capitaine: {
+    nom:"Le Murmure du Capitaine", cat:"T", ico:"🔍", cout:1,
+    desc:"Révèle la défense IA. ANT≥80 : révèle aussi la prochaine frappe.",
+    effet_immediat:true,
+    calculer(j, eq) { return {jet:0, rFaute:0, rContact:0, fautesPossibles:[], revele:true, reveleExtra: j.ant>=80}; }
+  },
+};
+
+// Pool de cartes pour piocher
+const POOL_ATT = ["frappe_tendue","frappe_lourde","frappe_puissance4","impact_zone","surcharge",
+                   "lob_tactique","dunk","feinte_corps","feinte_bras","tir_pivot","frappe_rasante",
+                   "securite_bord","deplacement","jeu_rapide","passe_frappe","attaque_furtive"];
+const POOL_TECH = ["cri_guerre","destabilisation","focus_intense","murmure_capitaine","passage_relais","tir_pivot"];
+
+// ═══════════════════════════════════════════════════════════
+// PROFILS IA
+// ═══════════════════════════════════════════════════════════
+const PROFILS_IA = {
+  BLEU: { style:"Agressif",  favori:"carre_rapproche", desc:"Frappes lourdes, risque max" },
+  GRIS: { style:"Tactique",  favori:"carre_base",      desc:"Exploite la fatigue adverse" },
+  NOIR: { style:"Endurance", favori:"carre_eloigne",   desc:"Jeu lent, résistance élevée" },
+};
+
+// ═══════════════════════════════════════════════════════════
+// ÉTAT DU JEU
+// ═══════════════════════════════════════════════════════════
+let G = {};
+
+function initG(equipe) {
+  let joueurs = {};
+  Object.keys(JOUEURS_BASE).forEach(id=>{
+    joueurs[id] = {...JOUEURS_BASE[id], end:100};
+  });
+  G = {
+    equipe, scores:{BLEU:0,GRIS:0,NOIR:0},
+    periodesGagnees:{BLEU:0,GRIS:0,NOIR:0},
+    actives:["BLEU","GRIS","NOIR"],
+    eq:{ eg:100, mtl:60, coh:75 }, // stats équipe joueur
+    iaEg:{BLEU:100,GRIS:100,NOIR:100},
+    iaMtl:{BLEU:60,GRIS:60,NOIR:60},
+    periode:1, attaque:"BLEU", // BLEU démarre
+    joueurSel:null, dernierFrappeur:null,
+    cibleSel:null, frappeSel:null,
+    phaseCritique:false, eliminee:null,
+    formIA:null, formIARevele:false,
+    effets:{ impact_zone:false, focus_intense:false, cout_reduit:false, debuff_agi:false },
+    debuffIaAgi:0,
+    timerInterval:null,
+    joueurs, main:[],
+    zoneBallon:"Centre",   // Art. 5.2.2 : mise en jeu au centre
+    estMiseEnJeu:true,     // affiche "Mise en jeu" dans le widget
+  };
+  document.getElementById("col-"+equipe).classList.add("eq-joueur");
+  document.getElementById("role-"+equipe).textContent = "★ Toi";
+}
+
+// ═══════════════════════════════════════════════════════════
+// ZONE DU BALLON (Art. 5.2.4 — remise en jeu au point de faute)
+// ═══════════════════════════════════════════════════════════
+const ZONES_LOIN  = ["Nord","Sud","Est","Ouest","Nord-Est","Nord-Ouest","Sud-Est","Sud-Ouest"];
+const ZONES_PRES  = ["Centre","Nord","Sud","Est","Ouest"];
+
+function calculerZone(idFrappe, reussi) {
+  // Faute ou défense réussie → ballon reste sur place (remise en jeu au point de faute)
+  if (!reussi) return G.zoneBallon;
+  if (!idFrappe) return "Centre";
+  if (["frappe_lourde","surcharge","deplacement"].includes(idFrappe))
+    return ZONES_LOIN[Math.floor(Math.random()*ZONES_LOIN.length)];
+  if (["lob_tactique","frappe_rasante"].includes(idFrappe))
+    return ZONES_LOIN[Math.floor(Math.random()*ZONES_LOIN.length)];
+  return ZONES_PRES[Math.floor(Math.random()*ZONES_PRES.length)];
+}
+
+function majZoneBallon() {
+  let el=document.getElementById("zone-ballon"); if(!el) return;
+  let z=G.zoneBallon;
+  let icon = z==="Centre" ? "⚫" : "🏐";
+  let note = G.estMiseEnJeu ? " <span style='color:#fbbf24;font-size:9px'>— Mise en jeu au centre (Art. 5.2.2)</span>" : "";
+  el.innerHTML = `${icon} <b>${z}</b>${note}`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// RÈGLE APPELLATION (Art. 6.1.6-6.1.8)
+// ═══════════════════════════════════════════════════════════
+function cibleObligatoire(att) {
+  let max = Math.max(...G.actives.map(e=>G.scores[e]));
+  if (max >= SC_CRITIQUE-1) return null; // règle suspendue avant score critique
+  let adv = G.actives.filter(e=>e!==att);
+  if (adv.length===1) return adv[0];
+  let sMax = Math.max(...adv.map(e=>G.scores[e]));
+  let hauts = adv.filter(e=>G.scores[e]===sMax);
+  if (hauts.length===adv.length) return null; // égalité → libre
+  return hauts[0];
+}
+
+// ═══════════════════════════════════════════════════════════
+// AFFICHAGE
+// ═══════════════════════════════════════════════════════════
+function log(html) { document.getElementById("log").innerHTML = html; }
+function setPh(txt,cls) {
+  let b=document.getElementById("pbadge"); b.textContent=txt; b.className="pbadge "+cls;
+}
+function showCont(txt="Continuer ➔") {
+  let b=document.getElementById("btn-cont"); b.style.display="inline-block"; b.innerHTML=txt; b.disabled=false;
+}
+function hideCont() { document.getElementById("btn-cont").style.display="none"; }
+
+function majScores() {
+  ["BLEU","GRIS","NOIR"].forEach(e=>{
+    document.getElementById("sc-"+e).textContent=G.scores[e];
+    let col=document.getElementById("col-"+e);
+    let t=col.querySelector(".crit-tag");
+    if (G.scores[e]>=SC_CRITIQUE&&!G.phaseCritique) {
+      if (!t){let d=document.createElement("div");d.className="crit-tag";d.textContent="CRIT!";col.appendChild(d);}
+    } else if(t) t.remove();
+  });
+  document.getElementById("per-label").textContent=`Période ${G.periode}/${NB_PERIODES}`;
+}
+
+function majJauges() {
+  let div=document.getElementById("jauges"); div.innerHTML="";
+  let defs=[
+    {k:"eg", label:"EG", col:"#10b981", title:"Endurance Globale"},
+    {k:"mtl",label:"MTL",col:"#8b5cf6", title:"Mental (Mana)"},
+    {k:"coh",label:"COH",col:"#f59e0b", title:"Cohésion"},
+  ];
+  defs.forEach(d=>{
+    let v=G.eq[d.k];
+    let fc=v>60?d.col:v>30?"#fbbf24":"#ef4444";
+    let el=document.createElement("div"); el.className="jauge-block";
+    el.title=d.title;
+    el.innerHTML=`<div class="jauge-top"><span>${d.label}</span><span>${Math.round(v)}</span></div>
+      <div class="jauge-bg"><div class="jauge-fill" style="width:${v}%;background:${fc}"></div></div>`;
+    div.appendChild(el);
+  });
+}
+
+function majRoster(disabled=false) {
+  let r=document.getElementById("roster"); r.innerHTML="";
+  Object.keys(G.joueurs).forEach(id=>{
+    let j=G.joueurs[id];
+    let cls="jcard";
+    if (disabled) cls+=" jdis";
+    else if (id===G.joueurSel) cls+=" jsel";
+    if (id===G.dernierFrappeur&&!disabled) cls+=" jinterdit";
+    let fat=j.end; let fc=fat>60?"#4cdf4c":fat>30?"#ff9f43":"#ef4444";
+    let tags="";
+    if (id===G.dernierFrappeur) tags+=`<div class="j2x">2x</div>`;
+    if (j.end<40) tags+=`<div class="jfat">FAT</div>`;
+    let onclick = disabled ? "" : id===G.dernierFrappeur ? `onclick="alert2x()"` : `onclick="selJoueur('${id}')"`;
+    r.innerHTML+=`<div class="${cls}" ${onclick}>
+      <div class="jgen">${j.gen}</div>
+      <div class="jnom">${j.nom}</div>
+      <div class="jrole">${j.role}</div>
+      <div class="jend-bg"><div class="jend-fill" style="width:${fat}%;background:${fc}"></div></div>
+      <div class="jstats">
+        <div class="jstat-row"><span class="jstat-l">PUI</span><span class="jstat-v">${j.pui}</span></div>
+        <div class="jstat-row"><span class="jstat-l">PRE</span><span class="jstat-v">${j.pre}</span></div>
+        <div class="jstat-row"><span class="jstat-l">AGI</span><span class="jstat-v">${j.agi}</span></div>
+        <div class="jstat-row"><span class="jstat-l">ANT</span><span class="jstat-v">${j.ant}</span></div>
+      </div>${tags}</div>`;
+  });
+}
+
+function alert2x() {
+  log(`⛔ <b>Deux fois le même frappeur !</b> (Art. 6.15)<br><span class="bad">${G.joueurs[G.dernierFrappeur].nom} vient de frapper — choisissez un autre joueur.</span>`);
+}
+
+// ═══════════════════════════════════════════════════════════
+// PIOCHER MAIN (3 cartes : 2 attaque + 1 tech)
+// ═══════════════════════════════════════════════════════════
+function piocher() {
+  let att=[...POOL_ATT]; let tech=[...POOL_TECH];
+  shuffle(att); shuffle(tech);
+  G.main = [att[0], att[1], tech[0]];
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+
+// ═══════════════════════════════════════════════════════════
+// PHASE PRINCIPALE
+// ═══════════════════════════════════════════════════════════
+function tick() {
+  hideCont(); clearTimer();
+  document.getElementById("cards-zone").innerHTML="";
+  document.getElementById("cible-row").style.display="none";
+  document.getElementById("trans-row").style.display="none";
+  document.getElementById("appel-box").style.display="none";
+  document.getElementById("appel-oblig-mini").textContent="";
+  G.joueurSel=null; G.cibleSel=null; G.frappeSel=null;
+  G.formIARevele=false;
+
+  // Recharge MTL (+5 par échange) et EG (+3)
+  G.eq.mtl = Math.min(MTL_MAX, G.eq.mtl+5);
+  G.eq.eg  = Math.min(EG_MAX,  G.eq.eg+3);
+  majJauges(); majScores();
+
+  if (!G.actives.includes(G.equipe)) { phaseIAvsIA(); return; }
+
+  if (G.attaque===G.equipe) phaseObservation();
+  else {
+    let cible=cibleIALegale(G.attaque);
+    if (cible===G.equipe) phaseDefense();
+    else phaseIAvsIA();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// PHASE 1 — OBSERVATION (Feuil1 : test de vision)
+// ═══════════════════════════════════════════════════════════
+function phaseObservation() {
+  setPh("Phase d'Observation","ph-obs");
+  piocher();
+
+  // L'IA choisit sa formation (cachée)
+  let formKeys=Object.keys(FORMATIONS_IA);
+  let profil=PROFILS_IA[G.actives.filter(e=>e!==G.equipe)[0]];
+  // Profil influence la formation choisie
+  G.formIA = profil?.style==="Agressif" ? "carre_rapproche"
+           : profil?.style==="Endurance" ? "carre_eloigne"
+           : formKeys[Math.floor(Math.random()*formKeys.length)];
+  G.formIARevele=false;
+
+  // Joueur défenseur = on détermine qui a récupéré
+  let joueurIds=Object.keys(G.joueurs);
+  let defenseur = joueurIds[Math.floor(Math.random()*joueurIds.length)];
+  G.joueurDefenseur = defenseur;
+  let jd=G.joueurs[defenseur];
+
+  // Test de vision (Feuil1)
+  let de=Math.floor(Math.random()*100)+1;
+  let antBonus = jd.ant>=80?15 : jd.ant>=60?5 : jd.ant<50?-5 : 0;
+  if (jd.ant<20) antBonus=-15;
+  let total=de+antBonus;
+
+  let infoFormation="", resultTxt="", resultCls="info";
+
+  if (total<20) {
+    resultTxt=`<span class="bad">Échec Critique !</span> La défense affiche une fausse information.`;
+    infoFormation = revelerFausseDef();
+  } else if (total<=50) {
+    resultTxt=`<span class="warn">Échec</span> — La défense reste cachée. Tu joues à l'aveugle.`;
+    infoFormation="Formation adverse : <b>???</b>";
+  } else if (total<=80) {
+    resultTxt=`<span class="ok">Succès</span> — Un indice : <b>"${indiceFormation(G.formIA)}"</b>`;
+    infoFormation="";
+  } else {
+    resultTxt=`<span class="ok">Réussite Critique !</span> La défense est révélée.`;
+    infoFormation=`Formation adverse : <b>${FORMATIONS_IA[G.formIA].nom}</b>`;
+    G.formIARevele=true;
+  }
+
+  // Mise à jour zone ballon après récup
+  majZoneBallon();
+  log(`🔭 <b>Phase d'Observation</b> — <em>${jd.nom}</em> a récupéré le ballon !<br>
+📍 Position du ballon : <b>${G.zoneBallon}</b>${G.estMiseEnJeu?" — Mise en jeu au centre (Art. 5.2.2)":""}<br>
+Jet de vision : ${de} + ANT bonus (${antBonus>=0?"+":""}${antBonus}) = <b>${total}</b><br>
+${resultTxt}<br>${infoFormation}<br><br>
+<span class="info">Étape suivante : choisir la transition de jeu.</span>`);
+
+  majRoster(true);
+  afficherTransition();
+}
+
+function indiceFormation(f) {
+  const idx={
+    carre_base:"Ils couvrent l'ensemble du terrain",
+    carre_rapproche:"Ils se resserrent, attention au centre !",
+    bloc_rapproche:"Formation compacte, ils anticipent un lob",
+    carre_eloigne:"Ils restent en retrait, méfiance au dunk",
+  };
+  return idx[f]||"Formation inconnue";
+}
+function revelerFausseDef() {
+  let faux=Object.keys(FORMATIONS_IA).filter(f=>f!==G.formIA);
+  let f=faux[Math.floor(Math.random()*faux.length)];
+  return `Formation adverse (info erronée) : <b>${FORMATIONS_IA[f].nom}</b>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PHASE 2 — TRANSITION
+// ═══════════════════════════════════════════════════════════
+function afficherTransition() {
+  let row=document.getElementById("trans-row"); row.style.display="flex"; row.innerHTML="";
+  let options=[
+    {id:"centre",  label:"↩ Replacer au Centre", desc:"Jeu placé, multiples frappes"},
+    {id:"rapide",  label:"⚡ Cellule sur Place",  desc:"Jeu rapide, timer 10s"},
+    {id:"passe",   label:"🤝 Faire une Passe",    desc:"Frappeur = récupérateur"},
+  ];
+  options.forEach(o=>{
+    let b=document.createElement("button"); b.className="tbtn";
+    b.innerHTML=`<div>${o.label}</div><div style="font-size:9px;opacity:0.6;margin-top:2px">${o.desc}</div>`;
+    b.onclick=()=>choisirTransition(o.id);
+    row.appendChild(b);
+  });
+}
+
+function choisirTransition(type) {
+  document.getElementById("trans-row").style.display="none";
+  G.transition=type;
+
+  if (type==="rapide") {
+    // Jeu rapide : timer 10s, joueur pre-sélectionné = défenseur
+    G.joueurSel=G.joueurDefenseur;
+    setPh("Jeu Rapide — 10s !","ph-att");
+    log(`⚡ <b>Cellule sur Place !</b> <em>${G.joueurs[G.joueurSel].nom}</em> frappe directement.<br>
+<span class="warn">⏱️ Timer 10 secondes — choisissez vite !</span>`);
+    majRoster();
+    startTimer(10, ()=>{
+      // Timer expiré → faute de temps
+      log(`⏱️ <b>Faute de Temps !</b> (Art. 6.8)<br><span class="bad">Trop lent — point aux adversaires.</span>`);
+      attribuerPoints(G.equipe);
+      majScores(); verifScoreCritique();
+      showCont();
+    });
+    afficherCibleChoix();
+  } else if (type==="passe") {
+    // Passe : le défenseur est le frappeur
+    G.joueurSel=G.joueurDefenseur;
+    let j=G.joueurs[G.joueurSel];
+    setPh("Passe + Frappe","ph-att");
+    log(`🤝 <b>Passe + Frappe !</b> <em>${j.nom}</em> prend la frappe.<br>
++15 jet d'attaque mais <span class="warn">15% de rater la passe → jet ÷ 2</span><br>
+Choisissez votre cible.`);
+    G.frappeSel="passe_frappe";
+    majRoster();
+    afficherCibleChoix();
+  } else {
+    // Replacer au centre → joueur libre
+    setPh("Ton Attaque","ph-att");
+    log(`↩ <b>Replacer au Centre</b> — Jeu placé. Choisissez un joueur puis une frappe.<br>
+<span class="info">Formation adverse : ${G.formIARevele?FORMATIONS_IA[G.formIA].nom:"????"}</span>`);
+    majRoster();
+    afficherCibleChoix();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// CHOIX DE CIBLE (OMNIKIN + couleur)
+// ═══════════════════════════════════════════════════════════
+function afficherCibleChoix() {
+  let oblig=cibleObligatoire(G.equipe);
+  if (oblig) {
+    document.getElementById("appel-box").style.display="block";
+    document.getElementById("appel-txt").textContent=oblig;
+  }
+
+  let cr=document.getElementById("cible-row"); cr.style.display="flex"; cr.innerHTML="";
+  let adv=G.actives.filter(e=>e!==G.equipe);
+  adv.forEach(e=>{
+    let b=document.createElement("button"); b.className="btn-cible";
+    if (oblig&&e!==oblig) b.disabled=true;
+    let s=G.scores[e];
+    let iaEnd=Math.round(G.iaEg[e]);
+    // Indice : équipe obligatoire ou libre
+    let regle = oblig ? (e===oblig ? "⚠️ Obligatoire" : "🚫 Interdit") : "✅ Libre";
+    b.innerHTML=`OMNIKIN ${e}<br><small style="font-size:9px;opacity:0.7">${s} pts · EG ${iaEnd}%</small><br><small style="font-size:8px;opacity:0.6">${regle}</small>`;
+    b.onclick=()=>selCible(e);
+    cr.appendChild(b);
+  });
+  // Rappel règle appellation
+  let rappelEl=document.getElementById("appel-rappel");
+  if (!rappelEl) {
+    rappelEl=document.createElement("div");
+    rappelEl.id="appel-rappel";
+    rappelEl.style.cssText="font-size:10px;color:var(--text2);background:var(--bg3);border-radius:6px;padding:5px 10px;border:1px solid var(--border)";
+    cr.parentNode.insertBefore(rappelEl, cr.nextSibling);
+  }
+  if (oblig) {
+    rappelEl.innerHTML=`📋 <b>Art. 6.1.6</b> — Vous devez appeler l'équipe au score le plus élevé : <b style="color:#fbbf24">${oblig}</b>.`;
+  } else {
+    let s=G.scores; let adv2=G.actives.filter(e=>e!==G.equipe);
+    let scoresTxt=adv2.map(e=>`${e}:${s[e]}`).join(" = ");
+    rappelEl.innerHTML=`📋 <b>Art. 6.1.8</b> — Égalité (${scoresTxt}) : vous pouvez appeler librement.`;
+  }
+
+  if (!G.joueurSel && G.transition==="centre") {
+    document.getElementById("cards-label").textContent="Choisissez un joueur ↑ puis une frappe ↓";
+  } else if (G.joueurSel) {
+    afficherFrappes();
+  }
+}
+
+function selJoueur(id) {
+  G.joueurSel=id; majRoster();
+  afficherFrappes();
+}
+
+function selCible(e) {
+  G.cibleSel=e;
+  document.getElementById("cible-row").style.display="none";
+  document.getElementById("appel-box").style.display="none";
+  document.getElementById("appel-oblig-mini").textContent="";
+  if (G.frappeSel) {
+    // passe_frappe : on exécute directement
+    executerAttaque();
+  } else {
+    afficherFrappes();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// AFFICHAGE CARTES
+// ═══════════════════════════════════════════════════════════
+function afficherFrappes() {
+  if (!G.joueurSel) return;
+  let zone=document.getElementById("cards-zone"); zone.innerHTML="";
+  document.getElementById("cards-label").textContent="Choisissez une frappe";
+
+  let cartesDispo=G.main;
+  cartesDispo.forEach(idC=>{
+    let c=CARTES[idC]; if(!c) return;
+    let cout=Math.max(0, c.cout-(G.effets.cout_reduit?1:0));
+    let nonJouable=null;
+    if (G.eq.mtl<cout) nonJouable="MTL insuffisant";
+    // Vérification non jouable spécifique
+    if (idC==="dunk"&&G.eq.mtl<50) nonJouable="MTL < 50%";
+    if (idC==="dunk"&&G.eq.eg<30)  nonJouable="EG < 30%";
+    if (idC==="jeu_rapide"&&G.joueurs[G.joueurSel].end<40) nonJouable="END < 40";
+    if (idC==="focus_intense"&&G.eq.eg<20) nonJouable="EG < 20";
+
+    let cls=`card c${c.cat.toLowerCase()}`;
+    // Tags visuels
+    let tagHtml="";
+    let formAdverse=G.formIA;
+    if (c.cat==="F"&&formAdverse==="carre_base") tagHtml+='<div class="good-tag">✓ vs Carré</div>';
+    if (c.cat==="P"&&formAdverse==="bloc_rapproche") tagHtml+='<div class="good-tag">✓ vs Bloc</div>';
+    if (c.cat==="M"&&formAdverse==="carre_rapproche") tagHtml+='<div class="good-tag">✓ vs Rapproché</div>';
+    if (idC==="dunk"&&formAdverse!=="bloc_rapproche") tagHtml='<div class="risk-tag">⚠️ Desc. garantie</div>';
+
+    let el=document.createElement("button");
+    el.className=cls; if(nonJouable) el.disabled=true;
+    el.innerHTML=`<div class="card-cost">${cout}</div>
+      <div class="card-ico">${c.ico}</div>
+      <div class="card-nom">${c.nom}</div>
+      <div class="card-desc">${nonJouable?`<span style="color:#f87171">❌ ${nonJouable}</span>`:c.desc}</div>
+      <div class="card-cat">${({'F':'Force','P':'Précision','M':'Mobilité','T':'Tech'})[c.cat]||c.cat}</div>
+      ${tagHtml}`;
+    el.onclick=()=>selFrappe(idC, cout);
+    zone.appendChild(el);
+  });
+}
+
+function selFrappe(idC, cout) {
+  let c=CARTES[idC];
+  // Cartes à effet immédiat (pas de frappe)
+  if (c.effet_immediat) {
+    jouerEffetImmediat(idC, cout); return;
+  }
+  G.frappeSel=idC;
+  G.eq.mtl=Math.max(0,G.eq.mtl-cout);
+  G.effets.cout_reduit=false;
+  if (idC==="tir_pivot") { G.effets.cout_reduit=true; }
+  majJauges();
+  if (G.cibleSel) executerAttaque();
+  else {
+    document.getElementById("cards-zone").innerHTML="";
+    document.getElementById("cards-label").textContent="Maintenant choisissez la cible ↑";
+    afficherCibleChoix();
+  }
+}
+
+function jouerEffetImmediat(idC, cout) {
+  let c=CARTES[idC];
+  let j=G.joueurSel?G.joueurs[G.joueurSel]:Object.values(G.joueurs)[0];
+  G.eq.mtl=Math.max(0,G.eq.mtl-cout);
+  let res=c.calculer(j, G.eq, G.formIA);
+
+  if (idC==="cri_guerre") {
+    G.eq.mtl=Math.min(MTL_MAX,G.eq.mtl+20);
+    log(`📢 <b>Cri de Guerre !</b> +20 MTL — Mental maintenant à <b>${Math.round(G.eq.mtl)}</b>.`);
+  } else if (idC==="destabilisation") {
+    let malus=res.mtlAdverseMalus||15;
+    G.actives.filter(e=>e!==G.equipe).forEach(e=>G.iaMtl[e]=Math.max(0,(G.iaMtl[e]||60)-malus));
+    log(`😵 <b>Déstabilisation !</b> MTL adverse réduit de ${malus} pts.`);
+  } else if (idC==="murmure_capitaine") {
+    let txt=`🔍 <b>Le Murmure du Capitaine !</b><br>Formation adverse : <b>${FORMATIONS_IA[G.formIA].nom}</b>`;
+    if (res.reveleExtra) txt+=`<br>ANT élevée — Prochaine frappe IA : <b>Force</b>`;
+    G.formIARevele=true;
+    log(txt);
+  } else if (idC==="passage_relais") {
+    let bonus=res.transfertMtl||10;
+    G.eq.mtl=Math.max(0,G.eq.mtl-bonus);
+    log(`🔁 <b>Passage de Relais !</b> −${bonus} MTL équipe → +${bonus} sur jet attaquant.`);
+    G.passageRelaisBonus=bonus;
+  } else if (idC==="focus_intense") {
+    G.effets.focus_intense=true;
+    log(`🔮 <b>Focus Intense !</b> Prochaine attaque = Réussite Critique garantie.`);
+  }
+  majJauges();
+  setTimeout(()=>afficherFrappes(), 700);
+}
+
+// ═══════════════════════════════════════════════════════════
+// EXÉCUTION ATTAQUE
+// ═══════════════════════════════════════════════════════════
+function executerAttaque() {
+  clearTimer();
+  document.querySelectorAll(".card").forEach(c=>c.disabled=true);
+  document.getElementById("trans-row").style.display="none";
+
+  let j=G.joueurs[G.joueurSel];
+  let c=CARTES[G.frappeSel];
+  if (!c||!j) { showCont(); return; }
+
+  // Appliquer effets persistants
+  let jPourCalc={...j};
+  if (G.effets.debuff_agi) jPourCalc.agi=Math.max(0,jPourCalc.agi-20);
+  if (G.passageRelaisBonus) jPourCalc.jetBonus=G.passageRelaisBonus;
+
+  // Formation : annulée par feinte/attaque furtive ?
+  let formPourCalc = (c.annuleFormation||c.ignoreFormation) ? "aucune" : G.formIA;
+
+  let res=c.calculer(jPourCalc, G.eq, formPourCalc);
+
+  // Focus Intense = réussite critique
+  if (G.effets.focus_intense) { res.jet=99; G.effets.focus_intense=false; }
+
+  // Effet persistant Impact Zone
+  if (G.effets.impact_zone) { res.jet+=10; G.effets.impact_zone=false; }
+
+  // Fatigue joueur
+  G.joueurs[G.joueurSel].end=Math.max(0,j.end-18);
+  G.eq.eg=Math.max(0,G.eq.eg-8);
+  if (G.frappeSel==="jeu_rapide") G.eq.eg=Math.max(0,G.eq.eg-10);
+  G.passageRelaisBonus=0;
+  G.dernierFrappeur=G.joueurSel; // Art. 6.15
+
+  // Activer effets persistants
+  if (c.persistant==="impact_zone") G.effets.impact_zone=true;
+  if (c.persistant==="debuff_agi")  G.effets.debuff_agi=true;
+  if (c.persistant==="focus_intense"&&res.jet!==99) G.effets.focus_intense=true;
+
+  majRoster(true); majJauges();
+
+  // ── Vérification faute technique ──────────────────────
+  if (res.nonJouable) {
+    log(`❌ <b>Non jouable !</b> ${res.nonJouable}`); showCont(); return;
+  }
+
+  // Calcul faute
+  let fauteRoll=Math.random()*100;
+  if (res.rFaute>0 && fauteRoll < res.rFaute) {
+    let f=res.fautesPossibles[Math.floor(Math.random()*res.fautesPossibles.length)]||"Faute";
+    log(`🚨 <b>Faute : ${f} !</b><br><span class="bad">${j.nom} commet une faute technique sur la ${c.nom}.</span><br>
+<i>${descFaute(f)}</i><br><span class="warn">+1 point aux deux équipes adverses.</span>`);
+    attribuerPoints(G.equipe);
+    G.attaque=G.cibleSel||G.actives.filter(e=>e!==G.equipe)[0];
+    G.eq.mtl=Math.max(0,G.eq.mtl-5);
+    majScores(); majJauges(); verifScoreCritique();
+    showCont(); return;
+  }
+
+  // Calcul manque contact (COH)
+  let contactRoll=Math.random()*100;
+  let seuilContact = 15 + res.rContact;
+  if (seuilContact>0 && contactRoll < seuilContact) {
+    log(`🚨 <b>Manque un Contact !</b> (Art. 6.2)<br><span class="bad">Un joueur n'était pas en contact avec le ballon au moment de la frappe.</span><br>
+<span class="warn">+1 point aux deux équipes adverses.</span>`);
+    attribuerPoints(G.equipe);
+    G.attaque=G.cibleSel;
+    majScores(); verifScoreCritique(); showCont(); return;
+  }
+
+  // ── Résolution attaque ─────────────────────────────────
+  // Formation IA : bonus défense
+  let formBonus = c.ignoreFormation||c.annuleFormation ? 0 : FORMATIONS_IA[G.formIA].defBonus;
+  let bonusCat = {Force:"F",Précision:"P",Mobilité:"M"}[FORMATIONS_IA[G.formIA].contre];
+  if (c.cat===bonusCat) formBonus=0; // la formation est efficace contre cette catégorie
+  else if (FORMATIONS_IA[G.formIA].contre && c.cat!==bonusCat) formBonus+=10;
+
+  // Endurance IA
+  let iaEndBonus = G.iaEg[G.cibleSel]>=70 ? 5 : G.iaEg[G.cibleSel]<40 ? -10 : 0;
+
+  let seuilReussite = 55 + formBonus + iaEndBonus - (G.debuffIaAgi?10:0);
+  let reussi = res.jet > seuilReussite - Math.random()*20;
+
+  // Cas spécial Déplacement vs formation rapprochée
+  if (G.frappeSel==="deplacement" && res.defFaute) {
+    log(`💥 <b>OMNIKIN ${G.cibleSel} — Déplacement !</b><br>
+Le bloc adverse était <b>rapproché</b> — faute Défensive sur l'équipe ${G.cibleSel} !<br>
+<span class="ok">${res.defFaute}% chance de faute défensive → FAUTE ! +1 point pour ${G.equipe} !</span>`);
+    attribuerPoints(G.cibleSel);
+    G.attaque=G.cibleSel;
+    G.iaEg[G.cibleSel]=Math.max(20,(G.iaEg[G.cibleSel]||100)-10);
+    G.eq.mtl=Math.min(MTL_MAX,G.eq.mtl+8);
+  } else if (reussi) {
+    let passeInfo=res.passeInfo?"<br>"+res.passeInfo:"";
+    log(`💥 <b>OMNIKIN ${G.cibleSel} !</b>${passeInfo}<br>
+<b>${j.nom}</b> exécute la <em>${c.nom}</em> — trajectoire parfaite !<br>
+<span class="ok">Échappé de ${G.cibleSel} ! +1 point pour ${G.equipe} !</span>`);
+    attribuerPoints(G.cibleSel);
+    G.attaque=G.cibleSel;
+    G.iaEg[G.cibleSel]=Math.max(20,(G.iaEg[G.cibleSel]||100)-8);
+    G.eq.mtl=Math.min(MTL_MAX,G.eq.mtl+10); // réussite → +MTL
+    G.effets.debuff_agi=false;
+  } else {
+    log(`🛡️ <b>OMNIKIN ${G.cibleSel} !</b><br>
+<b>${j.nom}</b> frappe — le bloc ${G.cibleSel} [${FORMATIONS_IA[G.formIA].nom}] relève proprement.<br>
+Possession : ${G.cibleSel}.`);
+    G.attaque=G.cibleSel;
+    G.iaEg[G.cibleSel]=Math.max(20,(G.iaEg[G.cibleSel]||100)-4);
+    G.eq.mtl=Math.max(0,G.eq.mtl-5); // échec → -MTL
+  }
+
+  // Mise à jour zone ballon
+  G.zoneBallon = calculerZone(G.frappeSel, reussi || false);
+  G.estMiseEnJeu = false;
+  majZoneBallon();
+  majScores(); majJauges(); verifScoreCritique();
+  showCont();
+}
+
+// ═══════════════════════════════════════════════════════════
+// PHASE DÉFENSE (IA attaque le joueur)
+// ═══════════════════════════════════════════════════════════
+function phaseDefense() {
+  setPh("Défense !","ph-def");
+  piocher();
+
+  let att=G.attaque;
+  let profil=PROFILS_IA[att];
+  // IA choisit une frappe selon son profil
+  let frappeIA=["Force","Précision","Mobilité"][Math.floor(Math.random()*3)];
+  if (profil.style==="Agressif") frappeIA="Force";
+  if (profil.style==="Endurance") frappeIA="Précision";
+  G.frappeIA=frappeIA;
+
+  let style=profil.style==="Agressif"?"⚡ <b>JEU AGRESSIF !</b>":
+            profil.style==="Tactique"?"🧠 <b>JEU TACTIQUE</b>":
+            "🔵 Jeu posé...";
+
+  log(`${style}<br><span class="info">OMNIKIN ${G.equipe} !</span><br>
+L'équipe <b>${att}</b> prépare une frappe de type <em>${frappeIA}</em>.<br><br>
+<i>Choisissez un joueur défenseur, puis une carte de défense.</i>`);
+
+  majRoster();
+  afficherCartesDefense();
+}
+
+function afficherCartesDefense() {
+  let zone=document.getElementById("cards-zone"); zone.innerHTML="";
+  document.getElementById("cards-label").textContent="Choisissez un joueur ↑ puis une défense ↓";
+
+  // Cartes de défense disponibles (sous-set des cartes tactiques)
+  const DEFENSE_CARTES=[
+    {id:"carre_equil",  nom:"Carré Équilibré",  ico:"🟩", cout:0, cat:"d",
+     desc:"Formation de base. Couverture homogène.",
+     fort:null, bonus:0},
+    {id:"carre_serre",  nom:"Carré Resserré",   ico:"🛡️", cout:1, cat:"d",
+     desc:"Bon contre Force. Exposé aux Lobs.",
+     fort:"Force", bonus:20},
+    {id:"carre_ecarte", nom:"Carré Écarté",     ico:"↔️", cout:1, cat:"d",
+     desc:"Bon contre Précision/Lob. Vulnérable centre.",
+     fort:"Précision", bonus:20},
+    {id:"plongeon",     nom:"Plongeon Glissé",   ico:"🤸", cout:2, cat:"d",
+     desc:"Très haute survie. Forte fatigue.",
+     fort:"all", bonus:35},
+  ];
+
+  DEFENSE_CARTES.forEach(dc=>{
+    let disabled=G.eq.mtl<dc.cout;
+    let tagHtml="";
+    if (dc.fort===G.frappeIA||dc.fort==="all") tagHtml='<div class="good-tag">✓ efficace</div>';
+    else if (dc.fort&&dc.fort!==G.frappeIA) tagHtml='<div class="risk-tag">✗ exposé</div>';
+
+    let el=document.createElement("button");
+    el.className=`card cd`; if(disabled) el.disabled=true;
+    el.innerHTML=`<div class="card-cost">${dc.cout}</div>
+      <div class="card-ico">${dc.ico}</div>
+      <div class="card-nom">${dc.nom}</div>
+      <div class="card-desc">${dc.desc}</div>
+      <div class="card-cat">Défense</div>${tagHtml}`;
+    el.onclick=()=>executerDefense(dc);
+    zone.appendChild(el);
+  });
+
+  // Cartes tech disponibles en défense
+  ["cri_guerre","murmure_capitaine"].forEach(idC=>{
+    let c=CARTES[idC]; if(!c) return;
+    if (!G.main.includes(idC)) return;
+    let el=document.createElement("button");
+    el.className="card ct";
+    el.innerHTML=`<div class="card-cost">${c.cout}</div>
+      <div class="card-ico">${c.ico}</div>
+      <div class="card-nom">${c.nom}</div>
+      <div class="card-desc">${c.desc}</div>
+      <div class="card-cat">Tech</div>`;
+    el.onclick=()=>jouerEffetImmediat(idC,c.cout);
+    zone.appendChild(el);
+  });
+}
+
+function executerDefense(dc) {
+  document.querySelectorAll(".card").forEach(c=>c.disabled=true);
+  let jId=G.joueurSel||Object.keys(G.joueurs)[Math.floor(Math.random()*4)];
+  let j=G.joueurs[jId];
+  G.eq.mtl=Math.max(0,G.eq.mtl-dc.cout);
+
+  // Calcul défense : base ANT+VIT simulé par ant+agi
+  let base=(j.ant*0.4+j.agi*0.3+j.pre*0.2)*(j.end/100);
+  let bonusDef=dc.bonus;
+  if (dc.fort===G.frappeIA||dc.fort==="all") bonusDef+=15;
+  else if (dc.fort&&dc.fort!==G.frappeIA) bonusDef-=15;
+
+  let jet=base*0.6+bonusDef+Math.random()*25;
+  let profil=PROFILS_IA[G.attaque];
+  let attIA=55+(profil.style==="Agressif"?10:profil.style==="Endurance"?-5:0)+Math.random()*25;
+
+  G.joueurs[jId].end=Math.max(0,j.end-14);
+  G.eq.eg=Math.max(0,G.eq.eg-6);
+  majRoster(true); majJauges();
+
+  if (jet>attIA) {
+    G.attaque=G.equipe;
+    G.dernierFrappeur=null;
+    G.eq.mtl=Math.min(MTL_MAX,G.eq.mtl+12);
+    log(`✅ <b>${dc.nom}</b> — <em>${j.nom}</em> lève le ballon parfaitement !<br>
+<span class="ok">Réception réussie ! C'est à votre équipe d'attaquer !</span>`);
+  } else {
+    attribuerPoints(G.equipe);
+    G.eq.mtl=Math.max(0,G.eq.mtl-8);
+    let typeFaute=Math.random()<0.6?"Échappé":"Extérieur";
+    log(`💥 <b>${typeFaute} !</b> (Art. 6.3/6.4)<br>
+<span class="bad">${j.nom} ne contrôle pas — le ballon touche le sol.</span><br>
++1 point aux deux équipes adverses.`);
+  }
+  // Zone ballon reste à l'endroit si échappé, sinon mise à jour
+  if (jet<=attIA) {
+    // Échappé → remise en jeu au point de faute (zone inchangée)
+    G.estMiseEnJeu=false;
+  } else {
+    G.zoneBallon = ZONES_PRES[Math.floor(Math.random()*ZONES_PRES.length)];
+    G.estMiseEnJeu=false;
+  }
+  majZoneBallon();
+  majScores(); majJauges(); verifScoreCritique();
+  showCont();
+}
+
+// ═══════════════════════════════════════════════════════════
+// PHASE IA vs IA
+// ═══════════════════════════════════════════════════════════
+function phaseIAvsIA() {
+  setPh("IA joue…","ph-ia");
+  let att=G.attaque;
+  let adv=G.actives.filter(e=>e!==att);
+  let cible=cibleIALegale(att);
+  let profil=PROFILS_IA[att];
+  let btn=document.getElementById("btn-cont");
+  btn.innerHTML=`IA joue<span class="loader"></span>`;
+  btn.style.display="inline-block"; btn.disabled=true;
+  log(`⚙️ <b>IA :</b> ${att} [${profil.style}] — OMNIKIN ${cible} !`);
+
+  G.iaEg[att]=Math.max(20,(G.iaEg[att]||100)-6);
+  G.iaEg[cible]=Math.max(20,(G.iaEg[cible]||100)-4);
+
+  setTimeout(()=>{
+    let chance=profil.style==="Agressif"?0.52:profil.style==="Tactique"?0.44:0.38;
+    if (Math.random()>chance) {
+      attribuerPoints(cible);
+      G.attaque=cible;
+      log(`⚙️ <b>IA :</b> OMNIKIN ${cible} — <span class="ok">Échappé ! +1 pt pour ${att}.</span>`);
+    } else {
+      G.attaque=cible;
+      log(`⚙️ <b>IA :</b> OMNIKIN ${cible} — Réception réussie, possession ${cible}.`);
+    }
+    majScores(); verifScoreCritique();
+    btn.disabled=false; btn.innerHTML="Continuer ➔";
+  }, 900);
+}
+
+function cibleIALegale(att) {
+  let oblig=cibleObligatoire(att);
+  if (oblig) return oblig;
+  let adv=G.actives.filter(e=>e!==att);
+  if (adv.length===1) return adv[0];
+  // Agressif → score le plus haut, autres → EG la plus basse
+  let profil=PROFILS_IA[att];
+  if (profil?.style==="Agressif") return adv.sort((a,b)=>G.scores[b]-G.scores[a])[0];
+  return adv.sort((a,b)=>(G.iaEg[a]||100)-(G.iaEg[b]||100))[0];
+}
+
+// ═══════════════════════════════════════════════════════════
+// POINTS / FAUTES
+// ═══════════════════════════════════════════════════════════
+function attribuerPoints(fautif) {
+  G.actives.forEach(e=>{ if(e!==fautif) G.scores[e]++; });
+}
+
+// ═══════════════════════════════════════════════════════════
+// SCORE CRITIQUE (Art. 5.2.5)
+// ═══════════════════════════════════════════════════════════
+function verifScoreCritique() {
+  if (G.phaseCritique) {
+    let gagnant=G.actives.find(e=>G.scores[e]>=SC_CIBLE);
+    if (gagnant) { finPeriode(gagnant); return; }
+    return;
+  }
+  let max=Math.max(...G.actives.map(e=>G.scores[e]));
+  if (max>=SC_CRITIQUE) {
+    G.phaseCritique=true;
+    let minS=Math.min(...G.actives.map(e=>G.scores[e]));
+    G.eliminee=G.actives.find(e=>G.scores[e]===minS);
+    G.actives=G.actives.filter(e=>e!==G.eliminee);
+    // L'équipe avec le moins de pts parmi les 2 restantes prend le ballon
+    let rest=G.actives;
+    G.attaque=G.scores[rest[0]]<=G.scores[rest[1]]?rest[0]:rest[1];
+    setTimeout(()=>{
+      let cur=document.getElementById("log").innerHTML;
+      document.getElementById("log").innerHTML=cur+
+        `<br><br>🚨 <b>SCORE CRITIQUE !</b> (Art. 5.2.5)<br>
+<span class="bad">L'équipe ${G.eliminee} quitte le terrain (${G.scores[G.eliminee]} pts).</span><br>
+Match à 2 équipes jusqu'à ${SC_CIBLE} pts.`;
+      setPh("Score Critique !","ph-crit");
+    },300);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// FIN DE PÉRIODE
+// ═══════════════════════════════════════════════════════════
+function finPeriode(gagnant) {
+  G.periodesGagnees[gagnant]++;
+  if (G.periodesGagnees[gagnant]>=NB_PERIODES) { finMatch(gagnant); return; }
+
+  let msg=gagnant===G.equipe?`🎉 <b>Vous remportez la période ${G.periode} !</b>`:
+          `😤 <b>L'équipe ${gagnant} remporte la période ${G.periode}.</b>`;
+
+  G.scores={BLEU:0,GRIS:0,NOIR:0};
+  G.actives=["BLEU","GRIS","NOIR"];
+  G.phaseCritique=false; G.eliminee=null;
+  G.attaque="BLEU"; // Art. 5.2.2 : BLEU commence toujours la période suivante
+  G.periode++;
+  G.dernierFrappeur=null;
+  G.eq={eg:100,mtl:60,coh:75};
+  G.iaEg={BLEU:100,GRIS:100,NOIR:100};
+  G.iaMtl={BLEU:60,GRIS:60,NOIR:60};
+  G.zoneBallon="Centre"; G.estMiseEnJeu=true; // Art. 5.2.2 : mise en jeu au centre
+  Object.values(G.joueurs).forEach(j=>j.end=100);
+
+  log(msg+`<br>Périodes gagnées — BLEU:${G.periodesGagnees.BLEU} | GRIS:${G.periodesGagnees.GRIS} | NOIR:${G.periodesGagnees.NOIR}<br>Période ${G.periode}/${NB_PERIODES}...`);
+  majScores(); majJauges();
+  document.getElementById("cards-zone").innerHTML="";
+  let btn=document.getElementById("btn-cont");
+  btn.style.display="inline-block"; btn.disabled=false;
+  btn.innerHTML=`Lancer la période ${G.periode} ➔`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// FIN DE MATCH
+// ═══════════════════════════════════════════════════════════
+function finMatch(gagnant) {
+  let o=document.getElementById("fin");
+  document.getElementById("fin-titre").textContent=gagnant===G.equipe?"VICTOIRE !":"DÉFAITE";
+  document.getElementById("fin-titre").style.color=gagnant===G.equipe?"#34d399":"#f87171";
+  let cols={BLEU:"#93c5fd",GRIS:"#d1d5db",NOIR:"#c7d2fe"};
+  document.getElementById("fin-board").innerHTML=
+    Object.entries(G.periodesGagnees).map(([e,p])=>
+      `<div class="fin-row" style="color:${cols[e]}"><span>${e}</span><span>${p} période${p>1?"s":""}</span></div>`
+    ).join("")+
+    `<div class="fin-row" style="color:var(--text2);font-size:12px;margin-top:6px"><span>Périodes jouées</span><span>${G.periode}</span></div>`;
+  o.classList.add("show");
+}
+
+// ═══════════════════════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════════════════════
+function startTimer(sec, callback) {
+  let bar=document.getElementById("timer-bar");
+  let fill=document.getElementById("timer-fill");
+  bar.style.display="block"; fill.style.width="100%";
+  let ms=sec*1000; let start=Date.now();
+  G.timerInterval=setInterval(()=>{
+    let elapsed=Date.now()-start;
+    let pct=Math.max(0,100-(elapsed/ms*100));
+    fill.style.width=pct+"%";
+    fill.style.background=pct>50?"var(--gold)":pct>20?"#f97316":"#ef4444";
+    if (elapsed>=ms) { clearTimer(); callback(); }
+  },100);
+}
+function clearTimer() {
+  if (G.timerInterval) { clearInterval(G.timerInterval); G.timerInterval=null; }
+  document.getElementById("timer-bar").style.display="none";
+}
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+function descFaute(f) {
+  const d={
+    "Pente Descendante":"La trajectoire du ballon doit avoir une partie ascendante. (Art. 6.5)",
+    "Extérieur":"Le ballon est sorti du terrain. (Art. 6.4)",
+    "Lancée Trop Court":"Le ballon doit sortir complètement de la Zone Offensive. (Art. 6.6)",
+    "Manque un Contact":"Les 4 joueurs doivent être en contact avec le ballon. (Art. 6.2)",
+    "Offensive":"Action irrégulière de l'équipe offensive. (Art. 6.12)",
+    "Défensive":"Action irrégulière de l'équipe défensive. (Art. 6.13)",
+    "Déplacement Illégal":"Déplacement hors de la Zone Offensive. (Art. 6.9)",
+  };
+  return d[f]||"";
+}
+
+// ═══════════════════════════════════════════════════════════
+// ENTRY POINTS
+// ═══════════════════════════════════════════════════════════
+function continuer() {
+  hideCont();
+  piocher();
+  tick();
+}
+
+function start(equipe) {
+  document.getElementById("setup").style.display="none";
+  initG(equipe);
+  majScores(); majJauges(); majRoster(true); majZoneBallon();
+  // Message de bienvenue avec rappel règles clés
+  log(`🏐 <b>Match lancé !</b> Vous jouez les <b>${equipe}</b>.<br>
+📋 <b>Rappel règle :</b> vous devez toujours appeler l'équipe au score le plus élevé — sauf en cas d'égalité où vous choisissez librement. (Art. 6.1.6-6.1.8)<br>
+📍 Ballon au <b>Centre</b> — Mise en jeu pour les <span style="color:var(--bleu-l)">BLEU</span>. (Art. 5.2.2)<br>
+<span class="info">Premier échange dans 3 secondes…</span>`);
+  setTimeout(tick, 2500);
+}
+
+function relancer() {
+  document.getElementById("fin").classList.remove("show");
+  document.getElementById("setup").style.display="flex";
+}
+</script>
+</body>
+</html>
